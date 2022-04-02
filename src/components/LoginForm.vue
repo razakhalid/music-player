@@ -62,7 +62,8 @@ export default {
       }
 
       this.login_alert_variant = 'bg-green-500';
-      this.login_alert_msg = 'Login Successful.'
+      this.login_alert_msg = 'Login Successful.';
+      window.location.reload();
     }
   }
 }
