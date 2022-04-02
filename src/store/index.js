@@ -11,7 +11,7 @@ export default createStore({
       state.authModalShow = !state.authModalShow;
       console.log(state.authModalShow);
     },
-    toggleAuthentication(state) {
+    toggleAuth(state) {
       state.userLoggedIn = !state.userLoggedIn;
     }
   },
@@ -33,6 +33,18 @@ export default createStore({
       await userCred.user.updateProfile({
         displayName: payload.name
       });
+
+      commit('toggleAuth');
+    },
+    init_login({ commit }) {
+      const user = auth.currentUser;
+
+      if (user) {
+        commit('toggleAuth');
+      }
+    },
+    async login({ commit }, payload) {
+      await auth.signInWithEmailAndPassword(payload.email, payload.password);
 
       commit('toggleAuth');
     }
