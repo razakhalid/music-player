@@ -3,7 +3,8 @@
   <div class="border border-gray-200 p-3 mb-4 rounded">
     <div v-show="!showForm">
       <h4 class="inline-block text-2xl font-bold">{{ song.modified_name }}</h4>
-      <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
+      <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right"
+      @click.prevent="deleteSong">
         <i class="fa fa-times"></i>
       </button>
       <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right"
@@ -22,7 +23,7 @@
           <vee-field type="text" name="modified_name"
                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
                         transition duration-500 focus:outline-none focus:border-black rounded"
-                 placeholder="Enter Song Title" />
+                 placeholder="Enter Song Title" @input="updateUnsavedFlag(true)" />
           <ErrorMessage class="text-red-600" name="modified_name" />
         </div>
         <div class="mb-3">
@@ -30,7 +31,7 @@
           <vee-field type="text" name="genre"
                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
                         transition duration-500 focus:outline-none focus:border-black rounded"
-                 placeholder="Enter Genre" />
+                 placeholder="Enter Genre" @input="updateUnsavedFlag(true)" />
           <ErrorMessage class="text-red-600" name="genre" />
         </div>
         <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600"
@@ -47,7 +48,7 @@
 </template>
 
 <script>
-import { songsCollection } from '@/includes/firebase';
+import { songsCollection, storage } from '@/includes/firebase';
 export default {
   name: "CompositionItem",
   props: {
@@ -62,6 +63,13 @@ export default {
     index: {
       type: Number,
       required: true
+    },
+    removeSong: {
+      type: Function,
+      required: true
+    },
+    updateUnsavedFlag: {
+      type: Function
     }
   },
   data() {
@@ -94,10 +102,22 @@ export default {
       }
 
       this.updateSong(this.index, values);
+      this.updateUnsavedFlag(false);
 
       this.in_submission = false;
       this.alert_variant = 'bg-green-500';
       this.alert_msg = 'Success!';
+    },
+    async deleteSong() {
+      const storageRef = storage.ref();
+      const songRef = storageRef.child(`songs/${this.song.original_name}`);
+
+      await songRef.delete();
+
+      await songsCollection.doc(this.song.docID).delete();
+
+      this.removeSong(this.index);
+
     }
   }
 }
