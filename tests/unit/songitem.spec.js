@@ -4,7 +4,8 @@ import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 describe('SongItem.vue', () => {
   test('render song.display_name', () => {
     const song = {
-      display_name: 'test'
+      docID: 'abc',
+      // display_name: 'test'
     }
 
     const wrapper = shallowMount(SongItem, {
@@ -20,6 +21,8 @@ describe('SongItem.vue', () => {
 
     const compositionAuthor = wrapper.find('.text-gray-500');
 
-    expect(compositionAuthor.text()).toBe(song.display_name);
+    // expect(wrapper.attributes().id).toBe(`song-id-${song.docID}`);
+
+    expect(wrapper.classes().includes(`song-id-${song.docID}`));
   })
 })
